@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2014-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.hawkular.metrics.core.service.MetricsService;
@@ -87,7 +86,7 @@ public class JobsServiceImpl implements JobsService, JobsServiceImplMBean {
         List<JobDetails> backgroundJobs = new ArrayList<>();
 
         deleteTenant = new DeleteTenant(session, metricsService);
-        Map<JobDetails, Integer> deleteTenantAttempts = new ConcurrentHashMap<>();
+
         // Use a simple retry policy to make sure tenant deletion does complete in the event of failure. For now
         // we simply retry after 5 minutes. We can implement a more sophisticated strategy later on if need be.
         Func2<JobDetails, Throwable, RetryPolicy> deleteTenantRetryPolicy = (details, throwable) ->

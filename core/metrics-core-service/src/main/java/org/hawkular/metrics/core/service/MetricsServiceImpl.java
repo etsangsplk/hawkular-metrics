@@ -575,6 +575,7 @@ public class MetricsServiceImpl implements MetricsService {
         return setFromMetricsIndex.concatWith(setFromData).distinct(m -> m.getMetricId());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> Observable<Metric<T>> findMetricsWithFilters(String tenantId, MetricType<T> metricType, String tags) {
         try {
@@ -668,16 +669,6 @@ public class MetricsServiceImpl implements MetricsService {
         return meter;
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> Func2<Metric<T>, Integer, Observable<Integer>> getInserter(MetricType<T> metricType) {
-        Func2<Metric<T>, Integer, Observable<Integer>> inserter
-                = (Func2<Metric<T>, Integer, Observable<Integer>>) dataPointInserters.get(metricType);
-        if (inserter == null) {
-            throw new UnsupportedOperationException(metricType.getText());
-        }
-        return inserter;
-    }
-
     @Override
     public <T> Observable<DataPoint<T>> findDataPoints(MetricId<T> metricId, long start, long end, int limit,
             Order order) {
@@ -754,7 +745,7 @@ public class MetricsServiceImpl implements MetricsService {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Completable compressBlock(Observable<? extends MetricId<?>> metrics, long startTimeSlice, long
             endTimeSlice, int pageSize) {
 

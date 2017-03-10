@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2014-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -346,7 +346,6 @@ public class DeleteTenantITest extends BaseITest {
     @Test
     public void deleteNonexistentTenant() throws Exception {
         String tenantId = nextTenantId();
-        DateTime start = new DateTime(jobScheduler.now());
 
         JobDetails details = jobsService.submitDeleteTenantJob(tenantId, jobName).toBlocking().value();
 

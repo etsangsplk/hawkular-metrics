@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2014-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -189,7 +189,6 @@ public class CompressDataJobITest extends BaseITest {
         assertNull(tags);
     }
 
-    @SuppressWarnings("unchecked")
     private <T> void testCompressResults(MetricType<T> type, Metric<T> metric, DateTime start) throws
             Exception {
         doAction(() -> metricsService.addDataPoints(type, Observable.just(metric)));
@@ -199,19 +198,13 @@ public class CompressDataJobITest extends BaseITest {
             latch.countDown();
         });
 
-//        for (JobDetails jobDetails : jobsService.getJobDetails().toBlocking().toIterable()) {
-//            if(JOB_NAME.equals(jobDetails.getJobName())) {
-//                jobScheduler.advanceTimeTo(jobDetails.getTrigger().getTriggerTime());
-//                break;
-//            }
-//        }
         jobScheduler.advanceTimeTo(compressionJob.getTrigger().getTriggerTime());
 
         assertTrue(latch.await(25, TimeUnit.SECONDS));
         long startSlice = DateTimeService.getTimeSlice(start.getMillis(), Duration.standardHours(2));
         long endSlice = DateTimeService.getTimeSlice(jobScheduler.now(), Duration.standardHours(2));
 
-        DataPointDecompressTransformer decompressor = new DataPointDecompressTransformer(type, Order.ASC, 0, start
+        DataPointDecompressTransformer<T> decompressor = new DataPointDecompressTransformer<>(type, Order.ASC, 0, start
                 .getMillis(), start.plusMinutes(30).getMillis());
 
         Observable<DataPoint<T>> dataPoints = dataAccess.findCompressedData(metric.getMetricId(), startSlice, endSlice,
